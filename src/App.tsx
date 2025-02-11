@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Filters from './components/Filters';
 import ArticleCard from './components/ArticleCard';
-import Sidebar from './components/Sidebar';
 import Loader from './components/Loarder';
 import './styles.css';
 import SideBar from './components/Sidebar';
@@ -22,6 +21,20 @@ interface Article {
   urlToImage: string;
   publishedAt: string;
   url: string;
+}
+interface GuardianResponse {
+  response: {
+    results: any[];
+  };
+}
+interface NYTResponse {
+  response: {
+    docs: any[];
+  };
+}
+
+interface ApiResponse {
+  articles: any[]; 
 }
 
 
@@ -48,7 +61,7 @@ const App: React.FC = () => {
     let url = `https://newsapi.org/v2/top-headlines?q=${searchQuery}s&apiKey=d9dc5f3e262d471e97f697b5e9512e9b`;
 
       try {
-        const response = await axios.get(url);
+        const response = await axios.get<ApiResponse>(url);
         return response.data.articles;
       } catch (error) {
         console.error('Error fetching articles:', error);
@@ -62,7 +75,7 @@ const App: React.FC = () => {
     let url = `https://newsapi.org/v2/everything?q=${searchQuery}s&apiKey=d9dc5f3e262d471e97f697b5e9512e9b`;
 
       try {
-        const response = await axios.get(url);
+        const response = await axios.get<ApiResponse>(url);
         return response.data.articles;
       } catch (error) {
         console.error('Error fetching articles:', error);
@@ -76,7 +89,7 @@ const App: React.FC = () => {
     const url = `https://content.guardianapis.com/search?q=${searchQuery}&api-key=fbf5ffe3-54c0-4142-bd6a-d131303ada4e`;
 
     try {
-      const response = await axios.get(url);
+      const response = await axios.get<GuardianResponse>(url);
       console.log('Testing GuardianAPI!!!', response.data.response.results);
       return response.data.response.results.map((article: any) => ({
         title: article.webTitle,
@@ -98,7 +111,7 @@ const App: React.FC = () => {
     const url = `https://api.nytimes.com/svc/search/v2/articlesearch.json?${searchQuery}&api-key=NtXTS3AtE0K9oEDAVuFt1T3UtYJm6zju`;
 
     try {
-      const response = await axios.get(url);
+      const response = await axios.get<NYTResponse>(url);
       console.log('Testing !!!', response.data.response.docs);
       return response.data.response.docs.map((article: any) => ({
         title: article.headline.main,

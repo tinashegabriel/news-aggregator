@@ -2,17 +2,19 @@
 FROM node:18.16.0
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copy package.json and install dependencies
-COPY package*.json ./
-RUN npm install
+# Copy package.json and package-lock.json first (for efficient caching)
+COPY package.json package-lock.json* ./
 
-# Copy the rest of the application code
+# Install dependencies
+RUN npm ci --legacy-peer-deps
+
+# Copy the entire app code AFTER dependencies are installed
 COPY . .
 
-# Build the React app
-RUN npm run build
+# Ensure all dependencies are installed properly
+RUN npm install
 
 # Expose the port the app runs on
 EXPOSE 3000
