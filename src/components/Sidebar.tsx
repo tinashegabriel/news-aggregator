@@ -10,6 +10,7 @@ interface SidebarProps {
   preferences: Preferences;
   setPreferences: (preferences: Preferences) => void;
   articles: Article[];
+  isOpen?: boolean;
 }
 
 const SideBar: React.FC<SidebarProps> = ({ preferences, setPreferences, articles }) => {

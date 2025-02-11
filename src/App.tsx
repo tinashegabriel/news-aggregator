@@ -40,6 +40,7 @@ const App: React.FC = () => {
     authors: [],
   });
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const fetchNewsAPI = async () => {
     const apiKey = 'YOUR_NEWSAPI_KEY';
@@ -156,11 +157,15 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="app">
-      <Header onSearch={setSearchQuery} />
+    <div  className={isOpen ? "app" : "appClose"}>
+      <Header onOpenSideBar={() => setIsOpen(!isOpen)} />
       <div className="main-content">
         {/* <SideBar /> */}
-        <SideBar preferences={preferences} setPreferences={setPreferences} articles={loaledArticles}/>
+        {
+          isOpen && (
+            <SideBar preferences={preferences} setPreferences={setPreferences} articles={loaledArticles}/>
+          )
+        }
         <Filters
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}

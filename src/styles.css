@@ -7,10 +7,22 @@ body {
   
   .header {
     display: flex;
-    justify-content: space-between;
-    padding: 20px;
+    padding: 10px;
     background-color: #1A73E8;
     color: white;
+  }
+  .menu-icon {
+    margin-right: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+  }
+  
+  .site-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 10px;
   }
   
   .news-feed {
@@ -27,8 +39,19 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
+  .logo {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+    align-content: center;
+  }
   .app {
     margin-left: 270px; 
+    /* padding: 16px; */
+  }
+  .appClose {
+    margin-left: none; 
     /* padding: 16px; */
   }
   
