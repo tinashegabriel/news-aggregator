@@ -7,6 +7,7 @@ import ArticleCard from './components/ArticleCard';
 import Sidebar from './components/Sidebar';
 import Loader from './components/Loarder';
 import './styles.css';
+import SideBar from './components/Sidebar';
 
 interface Preferences {
   sources: string[];
@@ -54,10 +55,24 @@ const App: React.FC = () => {
       }
   };
 
+  const fetchNewsAPIEveryThing = async () => {
+    const apiKey = 'YOUR_NEWSAPI_KEY';
+    const fromDate = filters.date ? filters.date.toISOString().split('T')[0] : '';
+    let url = `https://newsapi.org/v2/everything?q=${searchQuery}s&apiKey=d9dc5f3e262d471e97f697b5e9512e9b`;
+
+      try {
+        const response = await axios.get(url);
+        return response.data.articles;
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+        return [];
+      }
+  };
+
   const fetchGuardianAPI = async () => {
     const apiKey = 'YOUR_GUARDIAN_API_KEY';
     const fromDate = filters.date ? filters.date.toISOString().split('T')[0] : '';
-    const url = `https://content.guardianapis.com/search??q=${searchQuery}&api-key=fbf5ffe3-54c0-4142-bd6a-d131303ada4e`;
+    const url = `https://content.guardianapis.com/search?q=${searchQuery}&api-key=fbf5ffe3-54c0-4142-bd6a-d131303ada4e`;
 
     try {
       const response = await axios.get(url);
@@ -100,17 +115,18 @@ const App: React.FC = () => {
 
   const fetchArticles = async () => {
     setLoading(true);
-    const [newsAPIArticles, guardianArticles, nytArticles] = await Promise.all([
+    const [newsAPIArticles, newsAPIArticlesEverything,  guardianArticles, nytArticles] = await Promise.all([
       fetchNewsAPI(),
+      fetchNewsAPIEveryThing(),
       fetchGuardianAPI(),
       fetchNYTAPI(),
     ]);
-    console.log(newsAPIArticles);
+    console.log('News API Articles ===> ',newsAPIArticles);
     console.log('Next');
-    console.log(guardianArticles);
+    console.log('The Guardian Articles API ===>',guardianArticles);
     console.log('Next');
-    console.log(nytArticles);
-    setArticles([...newsAPIArticles, ...guardianArticles, ...nytArticles]);
+    console.log('Nyt API',nytArticles);
+    setArticles([...newsAPIArticles, ...newsAPIArticles, ...guardianArticles, ...nytArticles]);
     setLoadedArticles([...newsAPIArticles, ...guardianArticles, ...nytArticles]);
     setLoading(false);
   };
@@ -143,7 +159,8 @@ const App: React.FC = () => {
     <div className="app">
       <Header onSearch={setSearchQuery} />
       <div className="main-content">
-        {/* <Sidebar preferences={preferences} setPreferences={setPreferences} /> */}
+        {/* <SideBar /> */}
+        <SideBar preferences={preferences} setPreferences={setPreferences} articles={loaledArticles}/>
         <Filters
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}

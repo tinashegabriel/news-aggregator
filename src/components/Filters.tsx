@@ -44,15 +44,13 @@ const Filters: React.FC<FiltersProps> = ({ searchQuery, setSearchQuery, filters,
           className={styles.select}
         >
           <option value="">All Categories</option>
-          <option value="topstories">Top Stories / Breaking News</option>
+          <option value="general">General</option>
           <option value="technology">Technology</option>
-          <option value="business">Business & Finance </option>
+          <option value="business">Business</option>
           <option value="sports">Sports</option>
           <option value="entertainment">Entertainment</option>
-          <option value="science">Science & Health</option>
-          <option value="lifestyle">Lifestyle & Culture </option>
-          <option value="opinion">Opinion & Editorial</option>
-          <option value="world">World News </option>
+          <option value="science">Science</option>
+          <option value="health">Health</option>
         </select>
 
         <select

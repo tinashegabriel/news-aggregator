@@ -26,6 +26,11 @@ body {
     padding: 16px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
+
+  .app {
+    margin-left: 270px; 
+    /* padding: 16px; */
+  }
   
   @media (max-width: 768px) {
     .news-feed {
@@ -36,5 +41,18 @@ body {
   @media (max-width: 480px) {
     .news-feed {
       grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .navigation {
+      position: absolute;
+      width: 100%;
+      height: auto;
+      z-index: 1000;
+    }
+  
+    .app {
+      margin-left: 0;
     }
   }
