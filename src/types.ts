@@ -14,3 +14,18 @@ export interface Preferences {
   categories: string[];
   authors: string[];
 }
+
+export interface GuardianResponse {
+  response: {
+    results: any[];
+  };
+}
+export interface NYTResponse {
+  response: {
+    docs: any[];
+  };
+}
+
+export interface ApiResponse {
+  articles: any[]; 
+}

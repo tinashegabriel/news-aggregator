@@ -1,15 +1,9 @@
 import React from 'react';
 import styles from '../styles/ArticleCard.module.css';
+import { Article } from 'types';
 
 interface ArticleCardProps {
-  article: {
-    title: string;
-    source: { name: string };
-    description: string;
-    urlToImage: string;
-    publishedAt: string;
-    url: string;
-  };
+  article: Article;
 }
 
 const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {

@@ -7,35 +7,7 @@ import ArticleCard from './components/ArticleCard';
 import Loader from './components/Loarder';
 import './styles.css';
 import SideBar from './components/Sidebar';
-
-interface Preferences {
-  sources: string[];
-  categories: string[];
-  authors: string[];
-}
-
-interface Article {
-  title: string;
-  source: { name: string };
-  description: string;
-  urlToImage: string;
-  publishedAt: string;
-  url: string;
-}
-interface GuardianResponse {
-  response: {
-    results: any[];
-  };
-}
-interface NYTResponse {
-  response: {
-    docs: any[];
-  };
-}
-
-interface ApiResponse {
-  articles: any[]; 
-}
+import { ApiResponse, Article, GuardianResponse, NYTResponse, Preferences } from 'types';
 
 
 const App: React.FC = () => {
@@ -53,7 +25,7 @@ const App: React.FC = () => {
     authors: [],
   });
   const [loading, setLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const fetchNewsAPI = async () => {
     const apiKey = process.env.REACT_APP_NEWSAPI_KEY;

@@ -31,7 +31,7 @@ If this is your first time installing and running BITE, here's a step-by-step gu
 
 1.  Clone the project from GitHub using SSH into your source folder: `git clone https://github.com/tinashegabriel/news-aggregator.git`
 2.  Change directories to News Aggregator root directory from source folder where you cloned: `cd news-aggregator`
-3.  Run `nvm use` to switch to the correct node version v22.11.0
+3.  Run `nvm use` to switch to the correct node version v18.16.0
 4.  Run `npm i` in the root folder. If you get errors Run `npm ci --legacy-peer-deps` or `npm i --legacy-peer-deps`
 5.  Run `npm run build` in the root folder.
 

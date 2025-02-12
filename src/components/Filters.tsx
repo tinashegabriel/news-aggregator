@@ -39,7 +39,7 @@ const Filters: React.FC<FiltersProps> = ({ searchQuery, setSearchQuery, filters,
     <div className={styles.filtersContainer}>
       <input
         type="text"
-        placeholder="🔍 Search articles..."
+        placeholder=" 🔍 Search articles..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className={styles.searchInput}
