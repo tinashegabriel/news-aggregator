@@ -189,6 +189,8 @@ const App: React.FC = () => {
         <div className="news-feed">
           {loading ? (
             <Loader />
+          ) : articles.length === 0 ? (
+            <div className="no-news">No News Articles Found</div>
           ) : (
             articles.map((article, index) => (
               <ArticleCard key={index} article={article} />
@@ -196,7 +198,7 @@ const App: React.FC = () => {
           )}
         </div>
       </div>
-      <Footer/>
+      <Footer artLength={articles.length}/>
     </div>
   );
 };
