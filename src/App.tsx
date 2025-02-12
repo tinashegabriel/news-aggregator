@@ -8,6 +8,7 @@ import Loader from './components/Loarder';
 import './styles.css';
 import SideBar from './components/Sidebar';
 import { ApiResponse, Article, GuardianResponse, NYTResponse, Preferences } from 'types';
+import Footer from 'components/Footer';
 
 
 const App: React.FC = () => {
@@ -110,21 +111,25 @@ const App: React.FC = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    const formattedDate: string = filters.date ? new Date(filters.date).toLocaleDateString("en-GB") : "N/A";
-    if (filters.source === ''){
-      setArticles(loaledArticles)
-    }else{
-      const filteredArticles = loaledArticles.filter(article => {
-        const articleDate = new Date(article.publishedAt).toLocaleDateString("en-GB");
-        return (
-          article.source.name.toLowerCase() === filters.source.toLowerCase() &&
-          articleDate === formattedDate
-        );
-      });
-      setArticles(filteredArticles);
+    const formattedDate = filters.date ? new Date(filters.date).toLocaleDateString("en-GB") : null;
+  
+    if (!filters.source && !filters.category && !formattedDate) {
+      setArticles(loaledArticles);
+      return;
     }
-    
-  }, [filters]);
+  
+    const filteredArticles = loaledArticles.filter(article => {
+      const articleDate = new Date(article.publishedAt).toLocaleDateString("en-GB");
+  
+      return (
+        (!filters.source || article.source.name.toLowerCase() === filters.source.toLowerCase()) &&
+        (!filters.category || article.description?.toLowerCase().includes(filters.category.toLowerCase())) &&
+        (!formattedDate || articleDate === formattedDate)
+      );
+    });
+  
+    setArticles(filteredArticles);
+  }, [filters, loaledArticles]);
 
   useEffect(() => {
     const savedPreferences = localStorage.getItem("newsPreferences");
@@ -132,18 +137,28 @@ const App: React.FC = () => {
     if (savedPreferences) {
       try {
         const parsedPreferences: Preferences = JSON.parse(savedPreferences);
+  
+        if ((!parsedPreferences.sources || parsedPreferences.sources.length === 0) &&
+            (!parsedPreferences.categories || parsedPreferences.categories.length === 0)) {
+          setArticles(loaledArticles);
+          return;
+        }
 
-        if (parsedPreferences.sources && parsedPreferences.sources.length > 0) {
-          const filteredArticles = loaledArticles.filter((article) =>
+        const filteredArticles = loaledArticles.filter((article) => {
+          const sourceMatch = !parsedPreferences.sources || parsedPreferences.sources.length === 0 ||
             parsedPreferences.sources.some(
               (source) => source.toLowerCase() === article.source.name.toLowerCase()
-            )
-          );
+            );
   
-          setArticles(filteredArticles);
-        } else {
-          setArticles(loaledArticles);
-        }
+          const categoryMatch = !parsedPreferences.categories || parsedPreferences.categories.length === 0 ||
+            parsedPreferences.categories.some(
+              (category) => article.description?.toLowerCase().includes(category.toLowerCase())
+            );
+  
+          return sourceMatch || categoryMatch;
+        });
+  
+        setArticles(filteredArticles);
       } catch (error) {
         console.error("Error parsing savedPreferences:", error);
         setArticles(loaledArticles);
@@ -152,6 +167,7 @@ const App: React.FC = () => {
       setArticles(loaledArticles);
     }
   }, [loaledArticles]);
+  
 
 
   return (
@@ -180,6 +196,7 @@ const App: React.FC = () => {
           )}
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };
