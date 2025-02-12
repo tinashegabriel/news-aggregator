@@ -56,9 +56,8 @@ const App: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const fetchNewsAPI = async () => {
-    const apiKey = 'YOUR_NEWSAPI_KEY';
-    const fromDate = filters.date ? filters.date.toISOString().split('T')[0] : '';
-    let url = `https://newsapi.org/v2/top-headlines?q=${searchQuery}s&apiKey=d9dc5f3e262d471e97f697b5e9512e9b`;
+    const apiKey = process.env.REACT_APP_NEWSAPI_KEY;
+    let url = `https://newsapi.org/v2/top-headlines?q=${searchQuery}s&apiKey=${apiKey}`;
 
       try {
         const response = await axios.get<ApiResponse>(url);
@@ -70,9 +69,8 @@ const App: React.FC = () => {
   };
 
   const fetchNewsAPIEveryThing = async () => {
-    const apiKey = 'YOUR_NEWSAPI_KEY';
-    const fromDate = filters.date ? filters.date.toISOString().split('T')[0] : '';
-    let url = `https://newsapi.org/v2/everything?q=${searchQuery}s&apiKey=d9dc5f3e262d471e97f697b5e9512e9b`;
+    const apiKey = process.env.REACT_APP_NEWSAPI_KEY;
+    let url = `https://newsapi.org/v2/everything?q=${searchQuery}s&apiKey=${apiKey}`;
 
       try {
         const response = await axios.get<ApiResponse>(url);
@@ -84,13 +82,11 @@ const App: React.FC = () => {
   };
 
   const fetchGuardianAPI = async () => {
-    const apiKey = 'YOUR_GUARDIAN_API_KEY';
-    const fromDate = filters.date ? filters.date.toISOString().split('T')[0] : '';
-    const url = `https://content.guardianapis.com/search?q=${searchQuery}&api-key=fbf5ffe3-54c0-4142-bd6a-d131303ada4e`;
+    const apiKey = process.env.REACT_APP_GUARDIAN_API_KEY;
+    const url = `https://content.guardianapis.com/search?q=${searchQuery}&api-key=${apiKey}`;
 
     try {
       const response = await axios.get<GuardianResponse>(url);
-      console.log('Testing GuardianAPI!!!', response.data.response.results);
       return response.data.response.results.map((article: any) => ({
         title: article.webTitle,
         source: { name: 'The Guardian' },
@@ -106,13 +102,10 @@ const App: React.FC = () => {
   };
 
   const fetchNYTAPI = async () => {
-    const apiKey = 'YOUR_NYT_API_KEY';
-    const fromDate = filters.date ? filters.date.toISOString().split('T')[0] : '';
-    const url = `https://api.nytimes.com/svc/search/v2/articlesearch.json?${searchQuery}&api-key=NtXTS3AtE0K9oEDAVuFt1T3UtYJm6zju`;
-
+    const apiKey = process.env.REACT_APP_NYT_API_KEY;
+    const url = `https://api.nytimes.com/svc/search/v2/articlesearch.json?${searchQuery}&api-key=${apiKey}`;
     try {
       const response = await axios.get<NYTResponse>(url);
-      console.log('Testing !!!', response.data.response.docs);
       return response.data.response.docs.map((article: any) => ({
         title: article.headline.main,
         source: { name: 'The New York Times' },
@@ -135,13 +128,8 @@ const App: React.FC = () => {
       fetchGuardianAPI(),
       fetchNYTAPI(),
     ]);
-    console.log('News API Articles ===> ',newsAPIArticles);
-    console.log('Next');
-    console.log('The Guardian Articles API ===>',guardianArticles);
-    console.log('Next');
-    console.log('Nyt API',nytArticles);
-    setArticles([...newsAPIArticles, ...newsAPIArticles, ...guardianArticles, ...nytArticles]);
-    setLoadedArticles([...newsAPIArticles, ...guardianArticles, ...nytArticles]);
+    setArticles([...newsAPIArticles, ...newsAPIArticlesEverything,, ...guardianArticles, ...nytArticles]);
+    setLoadedArticles([...newsAPIArticles, ...newsAPIArticlesEverything, ...guardianArticles, ...nytArticles]);
     setLoading(false);
   };
 
@@ -150,9 +138,7 @@ const App: React.FC = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    console.log('The filters ====> ',filters);
     const formattedDate: string = filters.date ? new Date(filters.date).toLocaleDateString("en-GB") : "N/A";
-      console.log('Formatted date ', formattedDate);
     if (filters.source === ''){
       setArticles(loaledArticles)
     }else{
@@ -168,15 +154,41 @@ const App: React.FC = () => {
     
   }, [filters]);
 
+  useEffect(() => {
+    const savedPreferences = localStorage.getItem("newsPreferences");
+  
+    if (savedPreferences) {
+      try {
+        const parsedPreferences: Preferences = JSON.parse(savedPreferences);
+
+        if (parsedPreferences.sources && parsedPreferences.sources.length > 0) {
+          const filteredArticles = loaledArticles.filter((article) =>
+            parsedPreferences.sources.some(
+              (source) => source.toLowerCase() === article.source.name.toLowerCase()
+            )
+          );
+  
+          setArticles(filteredArticles);
+        } else {
+          setArticles(loaledArticles);
+        }
+      } catch (error) {
+        console.error("Error parsing savedPreferences:", error);
+        setArticles(loaledArticles);
+      }
+    } else {
+      setArticles(loaledArticles);
+    }
+  }, [loaledArticles]);
+
 
   return (
     <div  className={isOpen ? "app" : "appClose"}>
       <Header onOpenSideBar={() => setIsOpen(!isOpen)} />
       <div className="main-content">
-        {/* <SideBar /> */}
         {
           isOpen && (
-            <SideBar preferences={preferences} setPreferences={setPreferences} articles={loaledArticles}/>
+            <SideBar preferences={preferences} setPreferences={setPreferences} articles={loaledArticles} closeSidebar={() => setIsOpen(false)}/>
           )
         }
         <Filters

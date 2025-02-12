@@ -1,79 +1,85 @@
 import React, { useEffect, useState } from 'react';
+import { FiList, FiSave } from 'react-icons/fi';
+import { MdClose } from "react-icons/md";
 import styles from '../styles/SideBar.module.css';
-import { useDispatch } from "react-redux";
-import { setSources, setCategories } from "../redux/preferencesSlice";
-import { useSelector } from "react-redux";
-import { RootState } from 'redux/store';
-import { Article, Preferences } from 'types';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSources, setCategories } from '../redux/preferencesSlice';
+import { RootState } from '../redux/store';
+import { Article, Preferences } from '../types';
 
 interface SidebarProps {
   preferences: Preferences;
   setPreferences: (preferences: Preferences) => void;
   articles: Article[];
   isOpen?: boolean;
+  closeSidebar: () => void;
 }
 
-const SideBar: React.FC<SidebarProps> = ({ preferences, setPreferences, articles }) => {
-  const [tempPreferences, setTempPreferences] = useState<Preferences>(preferences);
+const CATEGORIES = ['General', 'Technology', 'Business', 'Sports', 'Entertainment', 'Science'];
+
+const Sidebar: React.FC<SidebarProps> = ({ preferences, setPreferences, articles, isOpen, closeSidebar }) => {
   const dispatch = useDispatch();
-  const preferencess = useSelector((state: RootState) => state.preferences);
-  const handleCheckboxChange = (type: keyof Preferences, value: string) => {
-    setTempPreferences((prev) => ({
-      ...prev,
-      [type]: prev[type].includes(value)
-        ? prev[type].filter((item) => item !== value)
-        : [...prev[type], value],
-    }));
-  };
-
-  const updateSources = (newSources: string[]) => {
-    dispatch(setSources(newSources));
-  };
-
-
-  const savePreferences = () => {
-    console.log('Temporary Pref ====> ',tempPreferences)
-    setPreferences(tempPreferences);
-    localStorage.setItem("newsPreferences", JSON.stringify(tempPreferences));
-    dispatch(setSources([tempPreferences.sources[0]]));
-    dispatch(setCategories([tempPreferences.categories[0]]))
-  };
+  const storedPreferences = useSelector((state: RootState) => state.preferences);
+  const [showMoreSources, setShowMoreSources] = useState(false);
 
   useEffect(() => {
-    const savedPreferences = localStorage.getItem("newsPreferences");
-    console.log('Saved Iteams =====>>> ', savedPreferences);
+    const savedPreferences = localStorage.getItem('newsPreferences');
     if (savedPreferences) {
       setPreferences(JSON.parse(savedPreferences));
-      setTempPreferences(JSON.parse(savedPreferences))
     }
-  }, []);
+  }, [setPreferences]);
+
+  const handleCheckboxChange = (type: keyof Preferences, value: string) => {
+    const updatedPreferences = {
+      ...preferences,
+      [type]: preferences[type].includes(value)
+        ? preferences[type].filter((item) => item !== value)
+        : [...preferences[type], value],
+    };
+    setPreferences(updatedPreferences);
+  };
+
+  const savePreferences = () => {
+    localStorage.setItem('newsPreferences', JSON.stringify(preferences));
+    dispatch(setSources(preferences.sources));
+    dispatch(setCategories(preferences.categories));
+  };
+
+  const uniqueSources = Array.from(new Set(articles.map((item) => item.source.name)));
 
   return (
-    <div className={styles.sideBar}>
-      <h3 className={styles.title}>Personalized News Feed</h3>
+    <div className={`${styles.sideBar} ${isOpen ? styles.open : ''}`}>
+      <div className={styles.sideBarClose} onClick={closeSidebar}>
+      <MdClose />
+      </div>
+      <h3 className={styles.title}><FiList /> Personalized News Feed</h3>
+
       <div className={styles.section}>
         <h4>Sources</h4>
-          {
-            Array.from(new Set(articles.map((item: Article) => item.source.name)))
-              .map((source, index) => (
-                <label key={index} className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={tempPreferences?.sources?.includes(source)}
-                    onChange={() => handleCheckboxChange('sources', source)}
-                  />
-                  {source}
-                </label>
-              ))
-          }
+        {uniqueSources.slice(0, showMoreSources ? uniqueSources.length : 5).map((source, index) => (
+          <label key={index} className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={preferences.sources.includes(source)}
+              onChange={() => handleCheckboxChange('sources', source)}
+            />
+            {source}
+          </label>
+        ))}
+        {uniqueSources.length > 5 && (
+          <button className={styles.showMore} onClick={() => setShowMoreSources(!showMoreSources)}>
+            {showMoreSources ? 'Show Less' : 'Show More'}
+          </button>
+        )}
       </div>
+
       <div className={styles.section}>
         <h4>Categories</h4>
-        {['general','technology', 'business', 'sports','entertainment','science'].map((category) => (
+        {CATEGORIES.map((category) => (
           <label key={category} className={styles.checkboxLabel}>
             <input
               type="checkbox"
-              checked={preferences?.categories?.includes(category)}
+              checked={preferences.categories.includes(category)}
               onChange={() => handleCheckboxChange('categories', category)}
             />
             {category}
@@ -82,15 +88,10 @@ const SideBar: React.FC<SidebarProps> = ({ preferences, setPreferences, articles
       </div>
 
       <button onClick={savePreferences} className={styles.saveButton}>
-        Save Preferences
+        <FiSave /> Save Preferences
       </button>
-      {/* <h4 className={styles.title}>Saved Preferences</h4>
-      <div>
-          <p><span style={{fontSize: '18px', fontWeight: 'bolder'}}>Selected Sources:</span> {preferences.sources.join(", ")}</p>
-          <p><span style={{fontSize: '18px', fontWeight: 'bolder'}}>Selected Categories:</span> {preferences.categories.join(", ")}</p>
-      </div> */}
     </div>
   );
 };
 
-export default SideBar;
+export default Sidebar;

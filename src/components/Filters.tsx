@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import styles from '../styles/Filters.module.css';
+import React from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Select from "react-select";
+import styles from "../styles/Filters.module.css";
+
 interface Article {
-  title: string;
   source: { name: string };
-  description: string;
-  urlToImage: string;
-  publishedAt: string;
-  url: string;
 }
 
 interface FiltersProps {
@@ -20,11 +17,29 @@ interface FiltersProps {
 }
 
 const Filters: React.FC<FiltersProps> = ({ searchQuery, setSearchQuery, filters, setFilters, articles }) => {
+  const uniqueSources = Array.from(new Set(articles.map((item) => item.source.name)));
+
+  const categoryOptions = [
+    { value: "", label: "All Categories" },
+    { value: "general", label: "General" },
+    { value: "technology", label: "Technology" },
+    { value: "business", label: "Business" },
+    { value: "sports", label: "Sports" },
+    { value: "entertainment", label: "Entertainment" },
+    { value: "science", label: "Science" },
+    { value: "health", label: "Health" },
+  ];
+
+  const sourceOptions = [
+    { value: "", label: "All Sources" },
+    ...uniqueSources.map((source) => ({ value: source, label: source })),
+  ];
+
   return (
     <div className={styles.filtersContainer}>
       <input
         type="text"
-        placeholder="Search for articles..."
+        placeholder="🔍 Search articles..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className={styles.searchInput}
@@ -34,38 +49,23 @@ const Filters: React.FC<FiltersProps> = ({ searchQuery, setSearchQuery, filters,
         <DatePicker
           selected={filters.date}
           onChange={(date: Date | null) => setFilters({ ...filters, date })}
-          placeholderText="Select Date"
+          placeholderText="📅 Select Date"
           className={styles.datePicker}
         />
-
-        <select
-          value={filters.category}
-          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-          className={styles.select}
-        >
-          <option value="">All Categories</option>
-          <option value="general">General</option>
-          <option value="technology">Technology</option>
-          <option value="business">Business</option>
-          <option value="sports">Sports</option>
-          <option value="entertainment">Entertainment</option>
-          <option value="science">Science</option>
-          <option value="health">Health</option>
-        </select>
-
-        <select
-          value={filters.source}
-          onChange={(e) => setFilters({ ...filters, source: e.target.value })}
-          className={styles.select}
-        >
-          <option value="">All Sources</option>
-          {
-            Array.from(new Set(articles.map((item: Article) => item.source.name)))
-              .map((source, index) => (
-                <option key={index} value={source}>{source}</option>
-              ))
-          }
-        </select>
+        <Select
+          options={categoryOptions}
+          value={categoryOptions.find((option) => option.value === filters.category)}
+          onChange={(selectedOption) => setFilters({ ...filters, category: selectedOption?.value || "" })}
+          className={styles.reactSelect}
+          placeholder="All Categories"
+        />
+        <Select
+          options={sourceOptions}
+          value={sourceOptions.find((option) => option.value === filters.source)}
+          onChange={(selectedOption) => setFilters({ ...filters, source: selectedOption?.value || "" })}
+          className={styles.reactSelect}
+          placeholder="All Sources"
+        />
       </div>
     </div>
   );

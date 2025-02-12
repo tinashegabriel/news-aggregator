@@ -1,58 +1,56 @@
 .filtersContainer {
+    background: var(--filter-bg);
+    padding: 12px;
+    border-radius: 10px;
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
     align-items: center;
-    flex-wrap: wrap;
-    padding: 16px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #e0e0e0;
-    gap: 12px;
-}
-
-.searchInput {
-    padding: 8px 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    width: 300px;
-    font-size: 1rem;
-}
-
-.filterGroup {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .searchInput {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid var(--filter-border);
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+    color: black;
+  }
+  
+  .searchInput:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
+  }
+  
+  .filterGroup {
     display: flex;
-    gap: 12px;
     flex-wrap: wrap;
-}
-
-.datePicker,
-.select {
-    padding: 8px 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.select {
-    background-color: #ffffff;
-}
-
-/* Mobile responsive query */
-@media screen and (max-width: 768px) {
-    .filtersContainer {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .searchInput {
-        width: 90%;
-    }
-
-    .filterGroup {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .datePicker,
-    .select {
-        width: 90%;
-    }
-}
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .datePicker {
+    padding: 10px;
+    border: 2px solid var(--filter-border);
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .datePicker:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .reactSelect {
+    width: 200px;
+    font-size: 14px;
+  }
+  .reactSelect::-webkit-scrollbar {
+    display: none;
+  }
+  
