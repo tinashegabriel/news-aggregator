@@ -21,7 +21,9 @@ This project integrates with various news APIs, including:
 
 ## Dependencies & Useful Documentation
 
-- [Node.js and npm](https://nodejs.org/en/)
+- [Node.js and npm](https://nodejs.org/en/)(Would recommend using [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) to manage)
+  - Node.JS = 18.16.0 
+  - npm = 9.6.7
 - [React JS](https://reactjs.org/)
 - [Docker](https://www.docker.com/) :whale:
 
