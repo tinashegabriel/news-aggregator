@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSources, setCategories } from '../redux/preferencesSlice';
 import { RootState } from '../redux/store';
 import { Article, Preferences } from '../types';
+import { useSnackbar } from 'notistack';
 
 interface SidebarProps {
   preferences: Preferences;
@@ -19,6 +20,7 @@ const CATEGORIES = ['General', 'Technology', 'Business', 'Sports', 'Entertainmen
 
 const Sidebar: React.FC<SidebarProps> = ({ preferences, setPreferences, articles, isOpen, closeSidebar }) => {
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const storedPreferences = useSelector((state: RootState) => state.preferences);
   const [showMoreSources, setShowMoreSources] = useState(false);
 
@@ -43,6 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ preferences, setPreferences, articles
     localStorage.setItem('newsPreferences', JSON.stringify(preferences));
     dispatch(setSources(preferences.sources));
     dispatch(setCategories(preferences.categories));
+    enqueueSnackbar('Successfully save preferences. Reload page to see effect.', { variant: 'success' });
   };
 
   const uniqueSources = Array.from(new Set(articles.map((item) => item.source.name)));

@@ -9,7 +9,9 @@ import './styles.css';
 import SideBar from './components/Sidebar';
 import { ApiResponse, Article, GuardianResponse, NYTResponse, Preferences } from 'types';
 import Footer from 'components/Footer';
+import Pagination from 'components/Pagination';
 
+const ITEMS_PER_PAGE = 12;
 
 const App: React.FC = () => {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -27,6 +29,7 @@ const App: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fetchNewsAPI = async () => {
     const apiKey = process.env.REACT_APP_NEWSAPI_KEY;
@@ -101,7 +104,7 @@ const App: React.FC = () => {
       fetchGuardianAPI(),
       fetchNYTAPI(),
     ]);
-    setArticles([...newsAPIArticles, ...newsAPIArticlesEverything,, ...guardianArticles, ...nytArticles]);
+    setArticles([...newsAPIArticles, ...newsAPIArticlesEverything, ...guardianArticles, ...nytArticles]);
     setLoadedArticles([...newsAPIArticles, ...newsAPIArticlesEverything, ...guardianArticles, ...nytArticles]);
     setLoading(false);
   };
@@ -111,6 +114,7 @@ const App: React.FC = () => {
   }, [searchQuery]);
 
   useEffect(() => {
+    setCurrentPage(1);
     const formattedDate = filters.date ? new Date(filters.date).toLocaleDateString("en-GB") : null;
   
     if (!filters.source && !filters.category && !formattedDate) {
@@ -133,6 +137,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const savedPreferences = localStorage.getItem("newsPreferences");
+    setCurrentPage(1);
   
     if (savedPreferences) {
       try {
@@ -155,7 +160,7 @@ const App: React.FC = () => {
               (category) => article.description?.toLowerCase().includes(category.toLowerCase())
             );
   
-          return sourceMatch || categoryMatch;
+          return sourceMatch;
         });
   
         setArticles(filteredArticles);
@@ -167,6 +172,13 @@ const App: React.FC = () => {
       setArticles(loaledArticles);
     }
   }, [loaledArticles]);
+
+  const totalPages = Math.ceil(articles.length / ITEMS_PER_PAGE);
+
+  const paginatedArticles = articles.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  )
   
 
 
@@ -192,11 +204,19 @@ const App: React.FC = () => {
           ) : articles.length === 0 ? (
             <div className="no-news">No News Articles Found</div>
           ) : (
-            articles.map((article, index) => (
+            paginatedArticles.map((article, index) => (
               <ArticleCard key={index} article={article} />
             ))
           )}
+          
         </div>
+        {totalPages > 1 && (
+            <Pagination 
+              currentPage={currentPage} 
+              totalPages={totalPages} 
+              onPageChange={setCurrentPage} 
+            />
+          )}
       </div>
       <Footer artLength={articles.length}/>
     </div>

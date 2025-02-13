@@ -9,6 +9,12 @@ body {
     display: none;
   }
 
+  .main-content {
+    height: 150vh;
+    max-height: 150vh;
+    margin-bottom: 100px;
+  }
+
   
   .header {
     display: flex;
